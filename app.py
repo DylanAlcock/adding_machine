@@ -1,12 +1,28 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 import math
 app = Flask(__name__)
+CORS(app)
 
 
 @app.route('/', methods=['GET'])
 def helloworld():
     return "hello world"
 
+@app.route('/calculate', methods=['POST'])
+def calculate():
+    data = request.get_json()
+    
+    try:
+        evaluated = str(eval(data['calc']))
+        print(data["calc"]+ "=" + evaluated)
+        json = jsonify({
+                        'solution': evaluated,
+                        'history': data["calc"] + "=" + evaluated,  
+                        })
+    except SyntaxError:
+        json = jsonify({'solution': "ERROR"})
+    return json
 
 @app.route('/calculator/add', methods=['POST'])
 def add():
