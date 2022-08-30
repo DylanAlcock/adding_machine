@@ -5,10 +5,9 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route('/', methods=['GET'])
-def helloworld():
-    return "hello world"
-
+# main api call used to calculate string equation
+# Requires json with calc key to be sent
+# Returns solution: value of equation and history calculate string with = solution at the end
 @app.route('/calculate', methods=['POST'])
 def calculate():
     data = request.get_json()
@@ -23,6 +22,13 @@ def calculate():
     except SyntaxError:
         json = jsonify({'solution': "ERROR"})
     return json
+
+
+#Previous api calls that I didn't end up using'
+@app.route('/', methods=['GET'])
+def helloworld():
+    return "hello world"
+
 
 @app.route('/calculator/add', methods=['POST'])
 def add():

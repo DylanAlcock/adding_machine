@@ -1,19 +1,28 @@
-import logo from './logo.svg';
 import { useState, useEffect } from 'react';
-import { flushSync } from 'react-dom';
 import './App.css';
 
 function App() {
-    const [calc, setCalc] = useState("");
-    const [result, setResult] = useState("");
-
     const ops = ["/", "*", "+", "-", "."];
+    const [calc, setCalc] = useState("");
+    const [items, setItems] = useState(savedItem);
 
+    //Set items to local storage or empty array if it doesn't exist
     let savedItem = JSON.parse(localStorage.getItem("history"));
     if (!savedItem) {
         savedItem = [];
     }
-    const [items, setItems] = useState(savedItem);
+
+    //Clear items and local storage
+    const clearHistory = () => {
+        console.log("Clearing history");
+        setItems([]);
+        localStorage.removeItem("history");
+    }
+
+    //Updates local storage after changed to items
+    useEffect(() => {
+        localStorage.setItem("history", JSON.stringify(items));
+    }, [items]);
 
 
 
@@ -21,24 +30,18 @@ function App() {
         setItems([...items, entry]);
     };
 
-    useEffect(() => {
-        localStorage.setItem("history", JSON.stringify(items));
-    }, [items]);
-
-
-    let calculation = "";
-
+    //Check to make sure input selected is valid, no initial operator before number or double operators
     const updateCalc = value => {
-
-        if (ops.includes(value) && calc === '' || ops.includes(value) && ops.includes(calc.slice(-1))) {
+        if ((ops.includes(value) && calc === '') || (ops.includes(value) && ops.includes(calc.slice(-1)))) {
             return
         } else {
             setCalc(calc + value);
         }   
     }
 
+    //Deletes last input in calc
     const deleteLast = () => {
-        if (calc == '') {
+        if (calc === '') {
             return
         } else {
             const value = calc.slice(0, -1);
@@ -50,6 +53,7 @@ function App() {
         setCalc('')
     }
 
+    //Api handler sends calc and gets response with solution and history
     function handleSubmit(e) {
         // avoid refreshing
         e.preventDefault()
@@ -77,8 +81,6 @@ function App() {
                 <div className="display">
                     {calc || "0"}
                 </div>
-
-
                 
                 <div className="functions">
                     <button>Sqrt</button>
@@ -118,6 +120,7 @@ function App() {
                         <li>{entry}</li>
                     )}
                 </ul>
+                <button className="reset" onClick={() => clearHistory()}> Reset</button>
             </div>
         </div>
     );
