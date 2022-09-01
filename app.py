@@ -61,16 +61,31 @@ def multiply():
 @app.route('/calculator/sqrt', methods=['POST'])
 def sqrt():
     data = request.get_json()
-    answer = math.sqrt(float(data['Num1']))
-    print(answer)
-    return jsonify({'solution': answer})
+    try:
+        evaluated = str(math.sqrt(float(data['calc'])))
+        print(data["calc"]+ "=" + evaluated)
+        json = jsonify({
+                        'solution': evaluated,
+                        'history': 'sqrt('+ data["calc"] + ')',
+                        })
+    except:
+        json = jsonify({'solution': "ERROR"})
+    return json
 
 @app.route('/calculator/square', methods=['POST'])
 def square():
     data = request.get_json()
-    answer = float(data['Num1'])**2
-    print(answer)
-    return jsonify({'solution': answer})
+   
+    try:
+        evaluated = str(float(data['calc'])**2)
+        print(data["calc"]+ "=" + evaluated)
+        json = jsonify({
+                        'solution': evaluated,
+                        'history': 'square('+ data["calc"] + ')',
+                        })
+    except:
+        json = jsonify({'solution': "ERROR"})
+    return json
 
 @app.route('/calculator/exponent', methods=['POST'])
 def exponent():

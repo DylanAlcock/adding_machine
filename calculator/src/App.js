@@ -4,13 +4,15 @@ import './App.css';
 function App() {
     const ops = ["/", "*", "+", "-", "."];
     const [calc, setCalc] = useState("");
-    const [items, setItems] = useState(savedItem);
+    
 
     //Set items to local storage or empty array if it doesn't exist
     let savedItem = JSON.parse(localStorage.getItem("history"));
     if (!savedItem) {
         savedItem = [];
     }
+
+    const [items, setItems] = useState(savedItem);
 
     //Clear items and local storage
     const clearHistory = () => {
@@ -34,6 +36,8 @@ function App() {
     const updateCalc = value => {
         if ((ops.includes(value) && calc === '') || (ops.includes(value) && ops.includes(calc.slice(-1)))) {
             return
+        } else if (calc === 'ERROR') {
+            setCalc(value);
         } else {
             setCalc(calc + value);
         }   
@@ -73,7 +77,48 @@ function App() {
                 setCalc("ERROR");
             }
     }
-    
+
+    //Api handler sends calc and gets response with solution and history
+    function squareSubmit(e) {
+        // avoid refreshing
+        e.preventDefault()
+
+        fetch("http://localhost:5000/calculator/square", {
+            headers: { "Content-Type": "application/json" },
+            method: "POST",
+            body: JSON.stringify({
+                "calc": calc,
+            })
+        }).then(res => res.json())
+            .then(json => {
+                setCalc(json.solution);
+                addEntry(json.history)
+
+            }).catch = (err) => {
+                setCalc("ERROR");
+            }
+    }
+
+    //Api handler sends calc and gets response with solution and history
+    function sqrtSubmit(e) {
+        // avoid refreshing
+        e.preventDefault()
+
+        fetch("http://localhost:5000/calculator/sqrt", {
+            headers: { "Content-Type": "application/json" },
+            method: "POST",
+            body: JSON.stringify({
+                "calc": calc,
+            })
+        }).then(res => res.json())
+            .then(json => {
+                setCalc(json.solution);
+                addEntry(json.history)
+
+            }).catch = (err) => {
+                setCalc("ERROR");
+            }
+    }
 
     return (
         <div className="App">
@@ -83,8 +128,8 @@ function App() {
                 </div>
                 
                 <div className="functions">
-                    <button>Sqrt</button>
-                    <button>^2</button>
+                    <button onClick={e => sqrtSubmit(e)}>Sqrt</button>
+                    <button onClick={e => squareSubmit(e)}>^2</button>
                     <button onClick={() => deleteLast()}>DEL</button>
                     <button onClick={() => clear()}>C</button>
                 </div>
