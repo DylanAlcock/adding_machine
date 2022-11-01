@@ -1,49 +1,82 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AddingMachine.BusinessLogic;
+using AddingMachine.Models;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace Adding_Machine.Controllers
+namespace AddingMachine.Controllers
 {
+    /// <summary>
+    /// Controller for the operations that are available on the adding machine
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("OpenCORSPolicy")]
     public class OperatorController : ControllerBase
     {
-        // GET: api/<OperatorController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
+        private readonly IOperator _operations;
 
+        public OperatorController(IOperator operations)
+        {
+            _operations = operations;
+        }
 
         // POST api/<OperatorController>
+        /// <summary>
+        /// Api endpoint to solve the equation
+        /// </summary>
+        /// <param name="equation"></param>
+        /// <returns></returns>
         [HttpPost]
-        public string Post([FromBody] string value)
+        public IActionResult PostSolve([FromBody] string equation)
         {
-            System.Data.DataTable table = new System.Data.DataTable();
-            return Convert.ToString(table.Compute(value, string.Empty));
+            ServiceResponse<string> result = _operations.Solve(equation);
+
+            if (!result.Success)
+                return BadRequest(result.Data);
+
+            return Content(result.Data, "application/json");
         }
 
 
         // PUT api/<OperatorController>/sqrt
+        /// <summary>
+        /// Api endpoint to sqrt the value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         [HttpPost("sqrt")]
-        public string PostSqrt([FromBody] string value)
+        public IActionResult PostSqrt([FromBody] string value)
         {
-            string evaluatedValue = Convert.ToString(Math.Sqrt(Convert.ToDouble(value)));
-            return evaluatedValue;
-
+            ServiceResponse<string> result = _operations.Sqrt(value);
+            return Content(result.Data, "application/json");
         }
 
-        // PUT api/<OperatorController>/sqrt
+        // PUT api/<OperatorController>/square
+        /// <summary>
+        /// Api endpoint to square the value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         [HttpPost("square")]
-        public void PostSquare([FromBody] string value)
+        public IActionResult PostSquare([FromBody] string value)
         {
+            ServiceResponse<string> result = _operations.Square(value);
+            return Content(result.Data, "application/json");
         }
 
-        // PUT api/<OperatorController>/sqrt
+        // PUT api/<OperatorController>/exponent
+        /// <summary>
+        /// Api endpoint to have a value an exponent of a second value
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
         [HttpPost("exponent")]
-        public void PostExponent([FromBody] string value)
+        public IActionResult PostExponent([FromBody] RequestParams values)
         {
+            ServiceResponse<string> result = _operations.Exponent(values);
+            return Content(result.Data, "application/json");
         }
 
     }
