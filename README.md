@@ -1,10 +1,12 @@
 # adding_machine
 
-Python Flask Backend, with React FrontEnd
+.NET Backend, with React FrontEnd
  
-Flask: Contains api for calculation of equations\
-pip install -r requirements.txt\
-To Run: python ap.py Starts server on http://localhost:5000/
+.NET: Open the AddingMachine.sln
+Run the AddingMachine project
+Page with swagger documentation for API should open automatically
 
-React: Frontend to control adding maching\
-npm start Starts React app on http://localhost:3000/
+React: In a terminal navigate to the front end folder
+cd .\AddingMachine\front-end\
+npm run dev
+Starts React app on http://localhost:3000/
